@@ -16,7 +16,8 @@
   Written by Limor Fried/Ladyada for Adafruit Industries.  
   BSD license, all text above must be included in any redistribution
  ****************************************************/
-
+#include "arm.h"
+#include "serialArmHandler.h"
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
@@ -40,7 +41,16 @@ uint8_t servonum = 0;
 short int values[6];
 int addr=0;
 
-void setup() {
+Arm bot;
+SerialHandler  handler(&bot);
+
+void setup(){
+  Serial.begin(9600);
+  bot.setDebug(&Serial);
+  delay(10);
+}
+
+void ssetup() {
   Serial.begin(9600);
   Serial.println("8 channel Servo test!");
 
@@ -84,8 +94,12 @@ void setServoPulse(uint8_t n, double pulse) {
   Serial.println(pulse);
   pwm.setPWM(n, 0, pulse);
 }
-  
+
 void loop(){
+  handler.loop();
+}
+  
+void sloop(){
   char c;
   if (Serial.available() > 0){
     c = Serial.read();
@@ -106,7 +120,7 @@ void loop(){
   }
 }
 
-void sloop() {
+void oloop() {
   // Drive each servo one at a time
   Serial.println(servonum);
   for (uint16_t pulselen = SERVOMIN; pulselen < SERVOMAX; pulselen++) {
